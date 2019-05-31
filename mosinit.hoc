@@ -1,0 +1,114 @@
+load_file("fig2A.ses")
+
+
+// record traces in these variables for later graphing
+
+objref soma_v, tip_v, stalk_v, time_v
+vsize=tstop/dt+1
+soma_v =  new Vector(vsize)
+tip_v =   new Vector(vsize)
+stalk_v = new Vector(vsize)
+time_v = new Vector(vsize)
+
+soma_v.record(&soma.v(0.5))
+tip_v.record(&tip.v(0.5))
+stalk_v.record(&st.v(0.9))
+time_v.record(&t)
+
+objref outerBox, innerBox[6], tobj, g[6]
+strdef tstr
+
+outerBox = new HBox()
+
+for i=0,1 {
+	innerBox[i] = new VBox()
+}
+for i=0,5 {
+	g[i] = new Graph(0)
+}
+
+objref gmax_vec
+
+gmax_vec = new Vector(3)
+
+proc create_graph() {
+	g[$1] = new Graph(0)
+	if ($1<3) {	// little tip gmax's are 	
+		gmax_vec.indgen(.02,.07,.02)	// .02, .04, .06
+						// note binary arith requires.07...
+	} else {	// big tip gmax's are
+		gmax_vec.indgen(.2,.7,.2)	// 0.2, 0.4, 0.6
+	}
+
+	for i=0,2 {	// loop over three gmax's
+		AlphaSynapse[0].gmax = gmax_vec.x[i]
+		init()
+		run()
+		if ( ($1==0) || ($1==3) ) {
+			tip_v.line(g[$1],time_v,2,0)
+			tip_v.label("")	// clears label for subsequent graphs...
+		} else if ( ($1==1) || ($1==4) ) {
+			stalk_v.line(g[$1],time_v,3,0)
+			stalk_v.label("")	// clears label for subsequent graphs...
+		} else if ( ($1==2) || ($1==5) ) {		
+			soma_v.line(g[$1],time_v,1,0)
+			soma_v.label("")	// clears label for subsequent graphs...
+		}
+	}
+	g[$1].view(0, -65, 25, 52, 602, 85, 200, 150)
+}
+
+outerBox.intercept(1)
+
+  innerBox[0].intercept(1)
+  
+    xpanel("small tip size")
+    xlabel("Tip	2x2 um")	// description
+    forsec "tip" {L=2 diam = 2}	// make it true
+    xpanel()
+
+    xpanel("tip traces")
+    tip_v.label("tip")
+    create_graph(0)
+    xpanel()
+    
+    xpanel("stalk traces")
+    stalk_v.label("stalk(0.9)")
+    create_graph(1)
+    xpanel()
+    
+    xpanel("soma traces")
+    soma_v.label("soma")
+    create_graph(2)
+    xpanel()
+    
+ innerBox[0].intercept(0)
+ innerBox[0].map() 
+
+ innerBox[1].intercept(1)
+  
+    xpanel("large tip size")
+    xlabel("Tip	64x64 um")	// description
+    forsec "tip" {L=64 diam = 64}	// make it true
+    xpanel()
+
+    xpanel("tip traces")
+    tip_v.label("tip")
+    create_graph(3)
+    xpanel()
+    
+    xpanel("stalk traces")
+    stalk_v.label("stalk(0.9)")
+    create_graph(4)
+    xpanel()
+    
+    xpanel("soma traces")
+    soma_v.label("soma")
+    create_graph(5)
+    xpanel()
+    
+ innerBox[1].intercept(0)
+ innerBox[1].map()
+
+outerBox.intercept(0)
+outerBox.map("figure 2a",200,500,500,400)

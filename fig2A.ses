@@ -1,0 +1,219 @@
+load_file("nrngui.hoc")
+
+objectvar save_window_, rvp_
+objectvar scene_vector_[5]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+
+//Begin CellBuild[0]
+{
+load_file("celbild.hoc", "CellBuild")
+}
+{ocbox_ = new CellBuild(1)}
+{object_push(ocbox_)}
+{
+version(1)
+continuous = 1
+}
+{object_push(topol)}
+{
+first = 0
+slist.remove_all()
+sname = "tip"
+objref tobj
+}
+{
+tobj = new CellBuildSection("soma",0, 0, tobj, 0) slist.append(tobj)
+  tobj.position(0,0,15,0) tobj.lx=10.1971 tobj.ly=-10.3097 tobj.i3d=0
+tobj = new CellBuildSection("axon",0, 0, tobj, 0) slist.append(tobj)
+tobj.parent=slist.object(0)
+  tobj.position(0,0,-150,0) tobj.lx=-73.1311 tobj.ly=-4.30404 tobj.i3d=0
+tobj = new CellBuildSection("st",0, 0, tobj, 1) slist.append(tobj)
+tobj.parent=slist.object(0)
+  tobj.position(15,0,120,0) tobj.lx=69.5027 tobj.ly=-5.80545 tobj.i3d=0
+tobj = new CellBuildSection("tip",0, 0, tobj, 1) slist.append(tobj)
+tobj.parent=slist.object(2)
+  tobj.position(120,0,135,0) tobj.lx=128.808 tobj.ly=-10.3097 tobj.i3d=0
+}
+for i=0, slist.count-1 {slist.object(i).rdses()}
+{object_pop()}
+{
+}
+{object_push(subsets)}
+{first = 0}
+{tobj = new SNList("all") snlist.append(tobj)}
+for i=0,3 tobj.add(bild.topol.slist.object(fscan()))
+0
+1
+2
+3
+{object_pop()}
+{
+}
+{object_push(geom)}
+{
+first = 0
+tobj = new GeoSpec(5)
+tobj.value = 0.1
+bild.subsets.snlist.object(0).geo.append(tobj)
+tobj = new GeoSpec(0)
+tobj.value = 30
+bild.topol.slist.object(0).geo.append(tobj)
+tobj = new GeoSpec(1)
+tobj.value = 30
+bild.topol.slist.object(0).geo.append(tobj)
+tobj = new GeoSpec(1)
+tobj.value = 1
+bild.topol.slist.object(1).geo.append(tobj)
+tobj = new GeoSpec(0)
+tobj.value = 1000
+bild.topol.slist.object(1).geo.append(tobj)
+tobj = new GeoSpec(1)
+tobj.value = 2
+bild.topol.slist.object(2).geo.append(tobj)
+tobj = new GeoSpec(0)
+tobj.value = 500
+bild.topol.slist.object(2).geo.append(tobj)
+tobj = new GeoSpec(0)
+tobj.value = 64
+bild.topol.slist.object(3).geo.append(tobj)
+tobj = new GeoSpec(1)
+tobj.value = 64
+bild.topol.slist.object(3).geo.append(tobj)
+set_default()
+}
+{object_pop()}
+{
+{
+save_window_=geom.g
+save_window_.size(-200,200,-150,150)
+geom.g = save_window_
+save_window_.save_name("geom.g")
+}
+}
+{object_push(memb)}
+{first=0}
+{
+tobj = new GeoSpec(0)
+tobj.value = 100
+tobj.set_default()
+tobj = new MStanWrap(tobj, 0)
+bild.subsets.snlist.object(0).ml.append(tobj)
+}
+{
+tobj = new MechanismStandard("pas")
+tobj.set("g_pas", 0.00015, 0)
+tobj.set("e_pas", -65, 0)
+tobj = new MStanWrap(tobj, 1)
+bild.subsets.snlist.object(0).ml.append(tobj)
+}
+{
+tobj = new GeoSpec(1)
+tobj.value = 1
+tobj.set_default()
+tobj = new MStanWrap(tobj, 0)
+bild.subsets.snlist.object(0).ml.append(tobj)
+}
+{object_pop()}
+{
+}
+{object_push(manage)}
+{
+first = 0
+classname = "Cell"
+etop=1 esub=1 egeom=1 emem=1
+itop=1 isub=0 igeom=0 imem=0
+bild.topol.names_off = 0
+bild.topol.circles_off = 0
+}
+{object_pop()}
+{
+cexport()
+}
+{
+save_window_=gtopol
+save_window_.size(-200,200,-150,150)
+gtopol = save_window_
+save_window_.save_name("gtopol")
+}
+{object_pop()}
+{
+ocbox_.map("CellBuild[0]", 660, 440, 570, 340)
+}
+objref ocbox_
+//End CellBuild[0]
+
+
+//Begin PointProcessManager
+{
+load_file("pointman.hoc")
+}
+{
+tip ocbox_ = new PointProcessManager(0)
+}
+{object_push(ocbox_)}
+{
+mt.select("AlphaSynapse") i = mt.selected()
+ms[i] = new MechanismStandard("AlphaSynapse")
+ms[i].set("onset", 2.5, 0)
+ms[i].set("tau", 0.1, 0)
+ms[i].set("gmax", 0.6, 0)
+ms[i].set("e", 0, 0)
+mt.select("AlphaSynapse") i = mt.selected() maction(i)
+hoc_ac_ = 0.5
+sec.sec move() d1.flip_to(0)
+}
+{object_pop() doNotify()}
+{
+ocbox_ = ocbox_.v1
+// ocbox_.map("PointProcessManager", 32, 344, 213.75, 331.5)
+ocbox_.map("PointProcessManager", 0, 100, 200, 250)
+}
+objref ocbox_
+//End PointProcessManager
+
+{
+xpanel("RunControl", 0)
+v_init = -65
+xvalue("Init","v_init", 1,"stdinit()", 1, 1 )
+xbutton("Init & Run","run()")
+xbutton("Stop","stoprun=1")
+runStopAt = 5
+xvalue("Continue til","runStopAt", 1,"{continuerun(runStopAt) stoprun=1}", 1, 1 )
+runStopIn = 1
+xvalue("Continue for","runStopIn", 1,"{continuerun(t + runStopIn) stoprun=1}", 1, 1 )
+xbutton("Single Step","steprun()")
+t = 25
+xvalue("t","t", 2 )
+tstop = 25
+xvalue("Tstop","tstop", 1,"tstop_changed()", 0, 1 )
+dt = 0.25	// 0.025
+xvalue("dt","dt", 1,"setdt()", 0, 1 )
+steps_per_ms = 4	// 40
+xvalue("Points plotted/ms","steps_per_ms", 1,"setdt()", 0, 1 )
+xcheckbox("Quiet",&stdrun_quiet,"")
+realtime = 1
+xvalue("Real Time","realtime", 0,"", 0, 1 )
+// xpanel(143,255)
+xpanel(367,-1)
+}
+objectvar save_window_, rvp_
+objectvar scene_vector_[5]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{
+save_window_ = new Graph(0)
+save_window_.size(0,25,-65,-23)
+scene_vector_[4] = save_window_
+{save_window_.view(0, -65, 25, 42, 660, 0, 360, 275)}
+graphList[0].append(save_window_)
+save_window_.save_name("graphList[0].")
+save_window_.addexpr("soma.v(.5)", 1, 1, 0.742346, 0.246578, 2)
+save_window_.addvar("tip.v( 0.5 )", 2, 1, 0.278088, 0.965658, 2)
+save_window_.addexpr("st.v( 0.9 )", 3, 1, 0.368589, 0.77643, 2)
+}
+objectvar scene_vector_[1]
+{doNotify()}
+
+objectvar scene_vector_[1]
+{doNotify()}
